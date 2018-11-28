@@ -15,7 +15,7 @@ setup(
     entry_points={
         'console_scripts': [
             'taskfarm = taskfarm.app:main',
-            'manageTF = taskfarm.manage:main',
+            'adminTF = taskfarm.manage:main',
             ]
         },
     author = "Magnus Hagdorn",

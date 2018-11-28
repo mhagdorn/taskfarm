@@ -1,5 +1,4 @@
 from taskfarm import app, db
-from sqlalchemy import func
 from flask_httpauth import HTTPBasicAuth
 from flask import jsonify, request,abort,g
 import json
@@ -9,12 +8,6 @@ from .models import *
 
 
 auth = HTTPBasicAuth()
-
-runStatus = {
-    'numWaiting' : TaskState.waiting,
-    'numDone' : TaskState.done,
-    'numComputing' : TaskState.computing,
-    }
 
 @auth.verify_password
 def verify_password(username_or_token, password):
@@ -50,30 +43,54 @@ def create_run():
     db.session.commit()
     return jsonify(run.to_dict), 201
 
-@app.route('/api/runs/<string:uuid>', methods=['GET'])
+@app.route('/api/runs', methods=['GET'])
+@auth.login_required
+def get_all_runs():
+    results = []
+    for run in Run.query.all():
+        results.append(run.to_dict)
+
+    return jsonify(results),200
+
+@app.route('/api/runs/<string:uuid>', methods=['GET','DELETE'])
 @auth.login_required
 def get_run(uuid):
     run = Run.query.filter_by(uuid=uuid).first()
     if not run:
         abort(404)
-    info = request.args.get('info', '')
-    if info == '':
-        result = run.to_dict
-    elif info == 'percentDone':
-        result = {'percentDone':
-                  db.session.query(
-                      func.sum(Task.percentCompleted)
-                      ).filter_by(run_id = run.id).scalar()/run.numTasks,
-                  }
-    elif info in runStatus:
-        result = {info:
-                  db.session.query(Task).filter(Task.run_id == run.id,Task.status == runStatus[info]).count(),
-                  }
+
+    if request.method == 'GET':
+        info = request.args.get('info', '')
+        if info == '':
+            result = run.full_status
+        elif info in ['percentDone','numWaiting','numDone','numComputing']:
+            result = {info: getattr(run,info)}
+        else:
+            abort(404)
+        return jsonify(result), 200
+    elif request.method == 'DELETE':
+        db.session.query(Task).filter_by(run_id = run.id).delete()
+        db.session.delete(run)
+        db.session.commit()
+        return '',204
+    abort(500)
+        
+@app.route('/api/runs/<string:uuid>/restart', methods=['POST'])
+@auth.login_required
+def restart_tasks(uuid):
+    run = Run.query.filter_by(uuid=uuid).first()
+    if not run:
+        abort(404)
+    restart_all = request.args.get('all', 'False')
+    if restart_all == 'True':
+        db.session.query(Task).filter_by(run_id = run.id).update({'status' :TaskState.waiting,'percentCompleted':0.})
+    elif restart_all == 'False':
+        db.session.query(Task).filter(Task.run_id == run.id,Task.percentCompleted<100).update({'status' :TaskState.waiting})
     else:
         abort(404)
-    return jsonify(result), 200
-
-
+    db.session.commit()
+    return '', 204
+        
 @app.route('/api/runs/<string:uuid>/task', methods=['POST'])
 @auth.login_required
 def get_task(uuid):

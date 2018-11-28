@@ -2,6 +2,7 @@ __all__ = ['TaskState','User','Run','Task','Worker']
 
 from taskfarm import db, app
 from itsdangerous import JSONWebSignatureSerializer as Serializer, BadSignature
+from sqlalchemy import func
 import enum
 from passlib.apps import custom_app_context as pwd_context
 
@@ -47,7 +48,7 @@ class Run(db.Model):
     uuid = db.Column(db.String, index=True, unique=True)
     numTasks = db.Column(db.Integer)
 
-    runs = db.relationship("Task", backref='run', lazy='dynamic')
+    tasks = db.relationship("Task", backref='run', lazy='dynamic')
 
     @property
     def to_dict(self):
@@ -55,7 +56,28 @@ class Run(db.Model):
             "id" : self.id,
             "uuid" : self.uuid,
             "numTasks" : self.numTasks,
-            }
+        }
+    @property
+    def full_status(self):
+        info = self.to_dict
+        for k in ['percentDone','numWaiting','numDone','numComputing']:
+            info[k] = getattr(self,k)
+        return info
+    @property
+    def percentDone(self):
+        return db.session.query(func.sum(Task.percentCompleted)).filter_by(run_id = self.id).scalar()/self.numTasks
+
+    def runStatus(self,status):
+        return Task.query.filter_by(run_id = self.id,status=status).count()
+    @property
+    def numWaiting(self):
+        return self.runStatus(TaskState.waiting)
+    @property
+    def numDone(self):
+        return self.runStatus(TaskState.done)
+    @property
+    def numComputing(self):
+        return self.runStatus(TaskState.computing)
 
 class Task(db.Model):
     __tablename__ = 'tasks'

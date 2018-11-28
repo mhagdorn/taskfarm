@@ -1,2 +1,8 @@
+2018-11-28 Magnus Hagdorn
+ * setup.py: rename admin script
+ * taskfarm/models.py: add some properties to describe the state of a run
+ * taskfarm/routes.py: add routes to get/set state of runs
+ * README.md: updated
+
 2018-11-28 Magnus Hagdorn 
  * create ChangeLog, first working version
