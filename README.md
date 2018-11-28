@@ -18,14 +18,20 @@ workers.
 
 You can set the environment variable DATABASE_URL to configure the data base
 connection. For example
+```
 export DATABASE_URL=sqlite:///app.db
+```
 or
+```
 export DATABASE_URL=postgresql://user:pw@host/db
+```
 
 You then need to create the tables by running
+```
 manageTF --init-db
-
+```
 You can then create some users
+```
 manageTF -u some_user -p some_password
-
+```
 These users are used by the worker to connect to the service.
