@@ -9,10 +9,13 @@ setup(
         "flask",
         "flask_sqlalchemy",
         "itsdangerous",
+        "passlib",
+        "flask-httpauth",
     ],
     entry_points={
         'console_scripts': [
             'taskfarm = taskfarm.app:main',
+            'manageTF = taskfarm.manage:main',
             ]
         },
     author = "Magnus Hagdorn",

@@ -1,3 +1,6 @@
 flask
 flask-sqlalchemy
+flask-httpauth
 itsdangerous
+passlib
+psycopg2

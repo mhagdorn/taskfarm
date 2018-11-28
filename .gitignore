@@ -2,3 +2,4 @@
 build
 dist
 taskfarm.egg-info
+taskfarm/__pycache__/

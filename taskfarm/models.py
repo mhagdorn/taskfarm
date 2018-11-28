@@ -1,0 +1,94 @@
+__all__ = ['TaskState','User','Run','Task','Worker']
+
+from taskfarm import db, app
+from itsdangerous import JSONWebSignatureSerializer as Serializer, BadSignature
+import enum
+from passlib.apps import custom_app_context as pwd_context
+
+class TaskState(enum.Enum):
+    waiting = 1
+    computing = 2
+    done = 3
+
+class User(db.Model):
+    __tablename__ = 'users'
+    id = db.Column(db.Integer, primary_key = True)
+    username = db.Column(db.String(32), index = True)
+    password_hash = db.Column(db.String(128))
+
+    def __repr__(self):
+        return '<User {}>'.format(self.username)
+    
+    def hash_password(self, password):
+        self.password_hash = pwd_context.encrypt(password)
+
+    def verify_password(self, password):
+        return pwd_context.verify(password, self.password_hash)
+
+    def generate_auth_token(self):
+        pass
+        s = Serializer(app.config['SECRET_KEY'])
+        return s.dumps({'id': self.id})
+
+    @staticmethod
+    def verify_auth_token(token):
+        s = Serializer(app.config['SECRET_KEY'])
+        try:
+            data = s.loads(token)
+        except BadSignature:
+            return None # invalid token
+        user = User.query.get(data['id'])
+        return user
+
+class Run(db.Model):
+    __tablename__ = 'runs'
+
+    id = db.Column(db.Integer, primary_key=True)
+    uuid = db.Column(db.String, index=True, unique=True)
+    numTasks = db.Column(db.Integer)
+
+    runs = db.relationship("Task", backref='run', lazy='dynamic')
+
+    @property
+    def to_dict(self):
+        return {
+            "id" : self.id,
+            "uuid" : self.uuid,
+            "numTasks" : self.numTasks,
+            }
+
+class Task(db.Model):
+    __tablename__ = 'tasks'
+
+    id = db.Column(db.Integer, primary_key=True)
+    task = db.Column(db.Integer)
+    status = db.Column(db.Enum(TaskState),default=TaskState.waiting)
+    started = db.Column(db.DateTime)
+    updated = db.Column(db.DateTime)
+    percentCompleted = db.Column(db.Float, default = 0.)
+
+    run_id = db.Column(db.Integer, db.ForeignKey('runs.id'))
+    worker_id = db.Column(db.Integer, db.ForeignKey('workers.id'))
+
+    @property
+    def to_dict(self):
+        return {
+            "id" : self.id,
+            "task" : self.task,
+            "percentCompleted" : self.percentCompleted,
+            "status" : self.status.name,
+            }
+    
+class Worker(db.Model):
+    __tablename__ = 'workers'
+
+    id = db.Column(db.Integer, primary_key=True)
+    uuid = db.Column(db.String, index=True, unique=True)
+    hostname = db.Column(db.String)
+    pid = db.Column(db.Integer)
+    start = db.Column(db.DateTime)
+
+    tasks = db.relationship("Task", backref='worker', lazy='dynamic')
+    
+    def __repr__(self):
+        return '{uuid: {uuid}, hostname: {hostname}, pid: {pid}, start {start}}'.format(self)

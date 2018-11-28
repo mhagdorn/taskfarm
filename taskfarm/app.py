@@ -1,10 +1,4 @@
-import flask
-
-app = flask.Flask(__name__)
-
-@app.route('/getTask', methods=['GET'])
-def getTask():
-    return flask.jsonify({'task':1})
+from taskfarm import app
 
 def main():
     app.run(debug=True)
