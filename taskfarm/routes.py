@@ -49,8 +49,7 @@ def get_all_runs():
     results = []
     for run in Run.query.all():
         results.append(run.to_dict)
-
-    return jsonify(results),200
+    return jsonify({'data':results}),200
 
 @app.route('/api/runs/<string:uuid>', methods=['GET','DELETE'])
 @auth.login_required

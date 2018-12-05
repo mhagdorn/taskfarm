@@ -1,3 +1,8 @@
+2018-12-05 Magnus Hagdorn
+ * taskfarm/__init__.py: setup logging when not running stand-alone
+ * taskfarm/manage.py: fix bug
+ * taskfarm/routes.py: make it work with older version of flask
+
 2018-11-28 Magnus Hagdorn
  * setup.py: rename admin script
  * taskfarm/models.py: add some properties to describe the state of a run

@@ -19,8 +19,8 @@ def main():
         if args.password is None:
             parser.error('need to set password')
             sys.exit(1)
-        u = User(username=user)
-        u.hash_password(password)
+        u = User(username=args.user)
+        u.hash_password(args.password)
         db.session.add(u)
         db.session.commit()
 
