@@ -1,3 +1,8 @@
+2018-12-10 Magnus Hagdorn
+ * taskfarm/models.py: add column to runs table handling the next task
+ * taskfarm/routes.py: do not prepopulate tasks table, generate tasks on the 
+   fly
+
 2018-12-05 Magnus Hagdorn
  * taskfarm/__init__.py: setup logging when not running stand-alone
  * taskfarm/manage.py: fix bug

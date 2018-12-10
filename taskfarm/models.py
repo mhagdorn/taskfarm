@@ -46,6 +46,7 @@ class Run(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     uuid = db.Column(db.String, index=True, unique=True)
+    nextTask = db.Column(db.Integer, default = 0)
     numTasks = db.Column(db.Integer)
 
     tasks = db.relationship("Task", backref='run', lazy='dynamic')
@@ -64,8 +65,14 @@ class Run(db.Model):
             info[k] = getattr(self,k)
         return info
     @property
+    def numListedTasks(self):
+        return Task.query.filter_by(run_id = self.id).count()
+    @property
     def percentDone(self):
-        return db.session.query(func.sum(Task.percentCompleted)).filter_by(run_id = self.id).scalar()/self.numTasks
+        try:
+            return db.session.query(func.sum(Task.percentCompleted)).filter_by(run_id = self.id).scalar()/self.numTasks
+        except:
+            return 0.
 
     def runStatus(self,status):
         return Task.query.filter_by(run_id = self.id,status=status).count()

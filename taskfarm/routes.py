@@ -5,7 +5,7 @@ import json
 from uuid import uuid4
 from datetime import datetime
 from .models import *
-
+import logging
 
 auth = HTTPBasicAuth()
 
@@ -37,9 +37,6 @@ def create_run():
 
     run = Run(uuid = uuid4().hex, numTasks = json.loads(request.json)['numTasks'])
     db.session.add(run)
-    # create the tasks
-    for i in range(run.numTasks):
-        db.session.add(Task(task=i,run=run))
     db.session.commit()
     return jsonify(run.to_dict), 201
 
@@ -56,6 +53,7 @@ def get_all_runs():
 def get_run(uuid):
     run = Run.query.filter_by(uuid=uuid).first()
     if not run:
+        logging.error('no run with uuid=%s'%uuid)
         abort(404)
 
     if request.method == 'GET':
@@ -79,6 +77,7 @@ def get_run(uuid):
 def restart_tasks(uuid):
     run = Run.query.filter_by(uuid=uuid).first()
     if not run:
+        logging.error('no run with uuid=%s'%uuid)
         abort(404)
     restart_all = request.args.get('all', 'False')
     if restart_all == 'True':
@@ -93,37 +92,73 @@ def restart_tasks(uuid):
 @app.route('/api/runs/<string:uuid>/task', methods=['POST'])
 @auth.login_required
 def get_task(uuid):
-    run = Run.query.filter_by(uuid=uuid).first()
-    if not run:
-        abort(404)
     if not request.json or not 'worker_uuid' in request.json:
         abort(400)
     worker_uuid = json.loads(request.json)['worker_uuid']
 
     worker = Worker.query.filter_by(uuid=worker_uuid).first()
     if not worker:
+        logging.error('no worker with uuid=%s'%worker_uuid)
+        abort(404)
+
+    run =db.session.query(Run).with_for_update().filter_by(uuid = uuid).first()
+    if not run:
+        logging.error('no run with uuid=%s'%uuid)
+        db.session.rollback()
         abort(404)
 
     task = db.session.query(Task).with_for_update().filter_by(status = TaskState.waiting,run_id = run.id).first()
-    if task is None:
-        return '',204
-    task.status = TaskState.computing
-    task.started = datetime.now()
-    task.worker = worker
-    db.session.add(task)
+    if not task and run.nextTask<run.numTasks:
+        # no waiting tasks, create the next one
+        if run.numListedTasks == run.nextTask:
+            task = Task(task=run.nextTask,run=run)
+            run.nextTask += 1
+        else:
+            for tid in range(run.nextTask,run.numTasks):
+                t = Task.query.filter_by(run_id = run.id,task=tid).first()
+                if not t:
+                    task = Task(task=run.nextTask,run=run)
+                    break
+            run.nextTask = t+1
+        db.session.add(run)
+
+    if task:
+        task.status = TaskState.computing
+        task.started = datetime.now()
+        task.worker = worker
+        db.session.add(task)
     db.session.commit()
 
-    return jsonify(task.to_dict), 201
+    if task is None:
+        return '',204
+    else:
+        return jsonify(task.to_dict), 201
         
-@app.route('/api/runs/<string:uuid>/tasks/<int:task>', methods=['GET','PUT'])
+@app.route('/api/runs/<string:uuid>/tasks/<int:taskID>', methods=['GET','PUT'])
 @auth.login_required
-def taskInfo(uuid,task):
+def taskInfo(uuid,taskID):
     run = Run.query.filter_by(uuid=uuid).first()
     if not run:
+        logging.error('no run with uuid=%s'%uuid)
         abort(404)
-    task = Task.query.filter_by(run_id = run.id,task=task).first()
+    task = Task.query.filter_by(run_id = run.id,task=taskID).first()
     if not task:
-        abort(404)
+        if taskID <0 or taskID>=run.numTasks:
+            logging.error('no taskID %d outside range(0,%d)'%(taskID,run.numTasks))
+            abort(404)
+
+        run =db.session.query(Run).with_for_update().filter_by(uuid = uuid).first()
+        if not run:
+            logging.error('no run with uuid=%s'%uuid)
+            db.session.rollback()
+            abort(404)
+        # create a new task
+        task = Task(task=taskID,run=run)
+        db.session.add(task)
+        if run.nextTask == taskID:
+            run.nextTask += 1
+            db.session.add(run)
+        db.session.commit()
 
     if request.method == 'GET':
         info = request.args.get('info', '')
