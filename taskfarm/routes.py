@@ -175,7 +175,10 @@ def taskInfo(uuid,taskID):
                 return str(e), 400
         task.updated = datetime.now()
         db.session.add(task)
-        db.session.commit()    
+        try:
+            db.session.commit()
+        except Exception as e:
+            return str(e), 400
         return '',204
     abort(500)
     

@@ -1,4 +1,7 @@
 2020-03-25 Magnus Hagdorn
+ * taskfarm/routes.py: catch and handle exception
+
+2020-03-25 Magnus Hagdorn
  * tests/test_taskfarm.py: add more tests
 
 2020-03-25 Magnus Hagdorn
