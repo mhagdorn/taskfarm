@@ -1,4 +1,7 @@
 2020-03-25 Magnus Hagdorn
+ * taskfarm/routes.py: update how json data is extracted from response
+
+2020-03-25 Magnus Hagdorn
  * taskfarm/routes.py: catch and handle exception
 
 2020-03-25 Magnus Hagdorn

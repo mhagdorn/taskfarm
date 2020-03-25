@@ -35,7 +35,7 @@ def create_run():
     if not request.json or not 'numTasks' in request.json:
         abort(400)
 
-    run = Run(uuid = uuid4().hex, numTasks = json.loads(request.json)['numTasks'])
+    run = Run(uuid = uuid4().hex, numTasks = request.json['numTasks'])
     db.session.add(run)
     db.session.commit()
     return jsonify(run.to_dict), 201
@@ -94,7 +94,7 @@ def restart_tasks(uuid):
 def get_task(uuid):
     if not request.json or not 'worker_uuid' in request.json:
         abort(400)
-    worker_uuid = json.loads(request.json)['worker_uuid']
+    worker_uuid = request.json['worker_uuid']
 
     worker = Worker.query.filter_by(uuid=worker_uuid).first()
     if not worker:
@@ -167,7 +167,7 @@ def taskInfo(uuid,taskID):
     elif request.method == 'PUT':
         if not request.json:
             abort(400)
-        data = json.loads(request.json)
+        data = request.json
         for info in data:
             try:
                 setattr(task,info,data[info])
@@ -187,7 +187,7 @@ def taskInfo(uuid,taskID):
 def create_worker():
     if not request.json:
         abort(400)
-    data = json.loads(request.json)
+    data = request.json
     for k in ['uuid','hostname','pid']:
         if k not in data:
             abort(400)
