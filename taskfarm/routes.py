@@ -146,12 +146,7 @@ def taskInfo(uuid,taskID):
         if taskID <0 or taskID>=run.numTasks:
             logging.error('no taskID %d outside range(0,%d)'%(taskID,run.numTasks))
             abort(404)
-
-        run =db.session.query(Run).with_for_update().filter_by(uuid = uuid).first()
-        if not run:
-            logging.error('no run with uuid=%s'%uuid)
-            db.session.rollback()
-            abort(404)
+            
         # create a new task
         task = Task(task=taskID,run=run)
         db.session.add(task)

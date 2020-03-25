@@ -1,4 +1,7 @@
 2020-03-25 Magnus Hagdorn
+ * taskfarm/routes.py: remove unnecessary test
+
+2020-03-25 Magnus Hagdorn
  * setup.py: use nose2 for testing, require newer version of flask
  * .gitignore: ignore some more stuff
  * tests/test_taskfarm.py: add some tests
