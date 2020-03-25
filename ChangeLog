@@ -1,3 +1,8 @@
+2020-03-25 Magnus Hagdorn
+ * setup.py: use nose2 for testing, require newer version of flask
+ * .gitignore: ignore some more stuff
+ * tests/test_taskfarm.py: add some tests
+
 2018-12-10 Magnus Hagdorn
  * taskfarm/models.py: add column to runs table handling the next task
  * taskfarm/routes.py: do not prepopulate tasks table, generate tasks on the 
