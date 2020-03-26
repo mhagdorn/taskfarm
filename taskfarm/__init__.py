@@ -1,11 +1,8 @@
-from flask import Flask
-from .config import Config
-from flask_sqlalchemy import SQLAlchemy
+from .application import app, db
+from .routes import *
+from .models import *
 import logging
 
-app = Flask(__name__)
-app.config.from_object(Config)
-db = SQLAlchemy(app)
 
 if __name__ != '__main__':
     # get gunicorn logger when the app is not run stand alone
@@ -14,4 +11,4 @@ if __name__ != '__main__':
     app.logger.setLevel(gunicorn_logger.level)
 
 
-from taskfarm import routes, models
+

@@ -1,6 +1,6 @@
 __all__ = ['TaskState', 'User', 'Run', 'Task', 'Worker']
 
-from taskfarm import db, app
+from .application import db, app
 from itsdangerous import JSONWebSignatureSerializer as Serializer, BadSignature
 from sqlalchemy import func
 import enum

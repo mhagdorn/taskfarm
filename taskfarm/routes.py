@@ -1,4 +1,4 @@
-from taskfarm import app, db
+from .application import app, db
 from flask_httpauth import HTTPBasicAuth
 from flask import jsonify, request, abort, g
 from uuid import uuid4
