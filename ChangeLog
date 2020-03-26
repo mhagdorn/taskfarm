@@ -1,3 +1,6 @@
+2020-03-26 Magnus Hagdorn
+ * make flake8 mostly happy
+
 2020-03-25 Magnus Hagdorn
  * taskfarm/routes.py: update how json data is extracted from response
 
