@@ -1,11 +1,11 @@
 from setuptools import setup, find_packages
 
 setup(
-    name = "taskfarm",
-    packages = find_packages(),
-    include_package_data = True,
+    name="taskfarm",
+    packages=find_packages(),
+    include_package_data=True,
     setup_requires=['nose2'],
-    install_requires = [
+    install_requires=[
         "sqlalchemy",
         "flask>=1.0",
         "flask_sqlalchemy",
@@ -15,11 +15,11 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'taskfarm = taskfarm.app:main',
-            'adminTF = taskfarm.manage:main',
+            'taskfarm=taskfarm.app:main',
+            'adminTF=taskfarm.manage:main',
             ]
         },
-    test_suite = 'nose2.collector.collector',
-    author = "Magnus Hagdorn",
-    description = "database backed taskfarm controller",
+    test_suite='nose2.collector.collector',
+    author="Magnus Hagdorn",
+    description="database backed taskfarm controller",
 )
