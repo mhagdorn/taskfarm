@@ -4,7 +4,7 @@ setup(
     name="taskfarm",
     packages=find_packages(),
     include_package_data=True,
-    setup_requires=['nose2'],
+    setup_requires=['nose2', 'flask-testing'],
     install_requires=[
         "sqlalchemy",
         "flask>=1.0",
