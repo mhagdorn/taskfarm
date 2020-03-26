@@ -35,3 +35,5 @@ You can then create some users
 adminTF -u some_user -p some_password
 ```
 These users are used by the worker to connect to the service.
+
+![test package taskfarm](https://github.com/mhagdorn/taskfarm/workflows/test%20package%20taskfarm/badge.svg)
