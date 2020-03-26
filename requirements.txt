@@ -1,6 +1,7 @@
 flask
 flask-sqlalchemy
 flask-httpauth
+flask-testing
 itsdangerous
 passlib
 psycopg2
