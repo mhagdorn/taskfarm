@@ -68,6 +68,7 @@ def get_all_runs():
     return jsonify({'data': results}), 200
 
 
+# this route is documented in the api.rst file
 @app.route('/api/runs/<string:uuid>', methods=['GET', 'DELETE'])
 @auth.login_required
 def get_run(uuid):
@@ -99,7 +100,8 @@ def get_run(uuid):
 def restart_tasks(uuid):
     """restart all tasks of run with uuid
 
-    :param string all: can be True/False (default). When set to
+    :param string uuid: uuid of the run
+    :query string all: can be True/False (default). When set to
       to True restart all tasks otherwise restart only partially
       completed tasks
 
@@ -131,11 +133,14 @@ def restart_tasks(uuid):
 def get_task(uuid):
     """request a task for run with uuid
 
+    :param string uuid: uuid of the run
+
     :<json string worker_uuid: uuid of worker requesting a task
     :>json int id: task ID
     :>json int task: task number
     :>json float percentCompleted: percentage compelted of task
-    :>json string status: task status, can be one of waiting, computing, done
+    :>json string status: task status, can be one of ``waiting``,
+                          ``computing``, ``done``
 
     :status 400: when worker_uuid is not present
     :status 404: when worker does not exist
@@ -188,6 +193,7 @@ def get_task(uuid):
         return jsonify(task.to_dict), 201
 
 
+# this route is documented in the api.rst file
 @app.route('/api/runs/<string:uuid>/tasks/<int:taskID>',
            methods=['GET', 'PUT'])
 @auth.login_required
