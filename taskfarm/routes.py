@@ -25,6 +25,10 @@ def verify_password(username_or_token, password):
 @app.route('/api/token')
 @auth.login_required
 def get_auth_token():
+    """get the authentication token
+
+    :>json string token: the authentication token
+    """
     token = g.user.generate_auth_token()
     return jsonify({'token': token.decode('ascii')})
 
@@ -32,7 +36,14 @@ def get_auth_token():
 @app.route('/api/run', methods=['POST'])
 @auth.login_required
 def create_run():
-    # create a new run
+    """create a new run
+
+    :<json int numTasks: the number of tasks of the run
+    :>json int id: run ID
+    :>json string uuid: run UUID
+    :>json int numTasks: the number of tasks
+    :status 400: when numTask is missing
+    """
     if not request.get_json() or 'numTasks' not in request.get_json():
         abort(400)
 
@@ -45,6 +56,12 @@ def create_run():
 @app.route('/api/runs', methods=['GET'])
 @auth.login_required
 def get_all_runs():
+    """get a list of all runs
+
+    :>jsonarr int id: run ID
+    :>jsonarr string uuid: run UUID
+    :>jsonarr int numTasks: the number of tasks
+    """
     results = []
     for run in Run.query.all():
         results.append(run.to_dict)
@@ -80,6 +97,16 @@ def get_run(uuid):
 @app.route('/api/runs/<string:uuid>/restart', methods=['POST'])
 @auth.login_required
 def restart_tasks(uuid):
+    """restart all tasks of run with uuid
+
+    :param string all: can be True/False (default). When set to
+      to True restart all tasks otherwise restart only partially
+      completed tasks
+
+    :status 400: when run with uuid does not exist
+    :status 404: when parameter all has wrong value
+    :status 204: success
+    """
     run = Run.query.filter_by(uuid=uuid).first()
     if not run:
         logging.error('no run with uuid={}'.format(uuid))
@@ -102,6 +129,20 @@ def restart_tasks(uuid):
 @app.route('/api/runs/<string:uuid>/task', methods=['POST'])
 @auth.login_required
 def get_task(uuid):
+    """request a task for run with uuid
+
+    :<json string worker_uuid: uuid of worker requesting a task
+    :>json int id: task ID
+    :>json int task: task number
+    :>json float percentCompleted: percentage compelted of task
+    :>json string status: task status, can be one of waiting, computing, done
+
+    :status 400: when worker_uuid is not present
+    :status 404: when worker does not exist
+    :status 404: when run does not exist
+    :status 204: no more tasks
+    :status 201: new tasks
+    """
     if not request.get_json() or 'worker_uuid' not in request.get_json():
         abort(400)
     worker_uuid = request.get_json()['worker_uuid']
@@ -201,6 +242,19 @@ def taskInfo(uuid, taskID):  # noqa C901
 @app.route('/api/worker', methods=['POST'])
 @auth.login_required
 def create_worker():
+    """create a wroker
+
+    :<json string uuid: worker uuid
+    :<json string hostname: hostname where worker is running
+    :<json int pid: process ID (PID) of worker
+
+    :>json string uuid: worker uuid
+    :>json int id: worker ID
+
+    :status 400: when input json is incomplete
+    :status 201: when worker was created successfully
+
+    """
     if not request.get_json():
         abort(400)
     data = request.get_json()
