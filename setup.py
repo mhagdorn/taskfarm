@@ -1,10 +1,25 @@
 from setuptools import setup, find_packages
+from sphinx.setup_command import BuildDoc
+
+name = 'taskfarm'
+version = '0.1'
+release = '0.1.0'
+author = 'Magnus Hagdorn'
 
 setup(
-    name="taskfarm",
+    name=name,
     packages=find_packages(),
+    version=release,
     include_package_data=True,
-    setup_requires=['nose2', 'flask-testing'],
+    cmdclass={'build_sphinx': BuildDoc},
+    command_options={
+        'build_sphinx': {
+            'project': ('setup.py', name),
+            'version': ('setup.py', version),
+            'release': ('setup.py', release),
+            'copyright': ('setup.py', author),
+            'source_dir': ('setup.py', 'docs')}},
+    setup_requires=['sphinx'],
     install_requires=[
         "sqlalchemy",
         "flask>=1.0",
@@ -13,6 +28,18 @@ setup(
         "passlib",
         "flask-httpauth",
     ],
+    extras_require={
+        'docs': [
+            'sphinx_rtd_theme',
+        ],
+        'lint': [
+            'flake8>=3.5.0',
+        ],
+        'testing': [
+            'nose2',
+            'flask-testing',
+        ],
+    },
     entry_points={
         'console_scripts': [
             'taskfarm=taskfarm.app:main',
@@ -20,6 +47,6 @@ setup(
         ]
     },
     test_suite='nose2.collector.collector',
-    author="Magnus Hagdorn",
+    author=author,
     description="database backed taskfarm controller",
 )
