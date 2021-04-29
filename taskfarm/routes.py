@@ -27,6 +27,8 @@ def verify_password(username_or_token, password):
 def get_auth_token():
     """get the authentication token
 
+    .. :quickref: token; get the authentication token
+
     :>json string token: the authentication token
     """
     token = g.user.generate_auth_token()
@@ -37,6 +39,8 @@ def get_auth_token():
 @auth.login_required
 def create_run():
     """create a new run
+
+    .. :quickref: run; create a new run
 
     :<json int numTasks: the number of tasks of the run
     :>json int id: run ID
@@ -57,6 +61,8 @@ def create_run():
 @auth.login_required
 def get_all_runs():
     """get a list of all runs
+
+    .. :quickref: runs; get a list of all runs
 
     :>jsonarr int id: run ID
     :>jsonarr string uuid: run UUID
@@ -98,7 +104,9 @@ def get_run(uuid):
 @app.route('/api/runs/<string:uuid>/restart', methods=['POST'])
 @auth.login_required
 def restart_tasks(uuid):
-    """restart all tasks of run with uuid
+    """restart all tasks of run
+
+    .. :quickref: runs; restart all tasks of a run
 
     :param string uuid: uuid of the run
     :query string all: can be True/False (default). When set to
@@ -131,7 +139,9 @@ def restart_tasks(uuid):
 @app.route('/api/runs/<string:uuid>/task', methods=['POST'])
 @auth.login_required
 def get_task(uuid):
-    """request a task for run with uuid
+    """request a task for run
+
+    .. :quickref: runs; request a task for run
 
     :param string uuid: uuid of the run
 
@@ -248,7 +258,9 @@ def taskInfo(uuid, taskID):  # noqa C901
 @app.route('/api/worker', methods=['POST'])
 @auth.login_required
 def create_worker():
-    """create a wroker
+    """create a worker
+
+    .. :quickref: worker; create a worker
 
     :<json string uuid: worker uuid
     :<json string hostname: hostname where worker is running
