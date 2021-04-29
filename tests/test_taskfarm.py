@@ -43,7 +43,7 @@ class TaskfarmTest(TestCase):
         u = User(username=u)
         u.hash_password(p)
         self.assertTrue(u.verify_password(p))
-        self.assertFalse(u.verify_password(p+'not'))
+        self.assertFalse(u.verify_password(p + 'not'))
 
         db.session.add(u)
         db.session.commit()
@@ -51,46 +51,46 @@ class TaskfarmTest(TestCase):
         assert u in db.session
 
     def test_get_auth_token(self):
-        response = self.app.get('/api/token',  headers=headers)
-        self.assertEqual(response.status_code,  200)
+        response = self.app.get('/api/token', headers=headers)
+        self.assertEqual(response.status_code, 200)
 
     def test_auth_with_token(self):
-        response = self.app.get('/api/token',  headers=headers)
+        response = self.app.get('/api/token', headers=headers)
         token = response.get_json()['token']
 
         h = {}
         h['Authorization'] = 'Basic ' + base64.b64encode(
-            token.encode('utf-8')+b': ').decode('utf-8')
+            token.encode('utf-8') + b': ').decode('utf-8')
         h['Content-Type'] = 'application/json'
         h['Accept'] = 'application/json'
 
-        response = self.app.get('/api/token',  headers=h)
-        self.assertEqual(response.status_code,  200)
+        response = self.app.get('/api/token', headers=h)
+        self.assertEqual(response.status_code, 200)
 
     def create_run(self, numTasks):
         response = self.app.post('/api/run',
                                  headers=headers,
                                  json={'numTasks': numTasks})
-        self.assertEqual(response.status_code,  201)
+        self.assertEqual(response.status_code, 201)
         return response.get_json()
 
     def create_worker(self, hostname, pid):
-        data = {'uuid':  uuid1().hex,
-                'hostname':  hostname,
+        data = {'uuid': uuid1().hex,
+                'hostname': hostname,
                 'pid': pid}
         response = self.app.post('/api/worker',
                                  headers=headers,
                                  json=data)
-        self.assertEqual(response.status_code,  201)
+        self.assertEqual(response.status_code, 201)
         return response.get_json()
 
     def get_run_info(self, run_uuid, info=None, status=200):
         data = {}
         if info is not None:
             data['info'] = info
-        response = self.app.get('/api/runs/'+run_uuid,
-                                headers=headers,  query_string=data)
-        self.assertEqual(response.status_code,  status)
+        response = self.app.get('/api/runs/' + run_uuid,
+                                headers=headers, query_string=data)
+        self.assertEqual(response.status_code, status)
         return response.get_json()
 
     def restart_run(self, run_uuid, all=None, status=204):
@@ -98,14 +98,14 @@ class TaskfarmTest(TestCase):
         if all is not None:
             data['all'] = all
         response = self.app.post('/api/runs/{}/restart'.format(run_uuid),
-                                 headers=headers,  query_string=data)
-        self.assertEqual(response.status_code,  status)
+                                 headers=headers, query_string=data)
+        self.assertEqual(response.status_code, status)
 
     def get_task(self, run_uuid, worker_uuid, status=201):
         response = self.app.post('/api/runs/{}/task'.format(run_uuid),
                                  headers=headers,
                                  json={'worker_uuid': worker_uuid})
-        self.assertEqual(response.status_code,  status)
+        self.assertEqual(response.status_code, status)
         return response.get_json()
 
     def get_task_info(self, run, task, info='', status=200):
@@ -115,14 +115,14 @@ class TaskfarmTest(TestCase):
         response = self.app.get('/api/runs/{}/tasks/{}'.format(run, task),
                                 headers=headers,
                                 query_string=args)
-        self.assertEqual(response.status_code,  status)
+        self.assertEqual(response.status_code, status)
         return response.get_json()
 
     def update_task_info(self, run, task, info, status=204):
         response = self.app.put('/api/runs/{}/tasks/{}'.format(run, task),
                                 headers=headers,
                                 json=info)
-        self.assertEqual(response.status_code,  status)
+        self.assertEqual(response.status_code, status)
 
     def test_create_run(self):
         nt = 10
@@ -136,7 +136,7 @@ class TaskfarmTest(TestCase):
             run = self.create_run(nt)
             runs.append(run)
         response = self.app.get('/api/runs', headers=headers)
-        self.assertEqual(response.status_code,  200)
+        self.assertEqual(response.status_code, 200)
         data = response.get_json()['data']
         for i in range(len(runs)):
             self.assertDictEqual(runs[i], data[i])
@@ -145,8 +145,8 @@ class TaskfarmTest(TestCase):
         nt = 10
         run = self.create_run(nt)
 
-        response = self.app.get('/api/runs/'+run['uuid'],  headers=headers)
-        self.assertEqual(response.status_code,  200)
+        response = self.app.get('/api/runs/' + run['uuid'], headers=headers)
+        self.assertEqual(response.status_code, 200)
         data = response.get_json()
         self.assertEqual(data['uuid'], run['uuid'])
         self.assertEqual(data['numTasks'], nt)
@@ -154,8 +154,8 @@ class TaskfarmTest(TestCase):
             self.assertEqual(data[k], 0)
 
     def test_get_run_na(self):
-        response = self.app.get('/api/runs/no_such_run',  headers=headers)
-        self.assertEqual(response.status_code,  404)
+        response = self.app.get('/api/runs/no_such_run', headers=headers)
+        self.assertEqual(response.status_code, 404)
 
     def test_get_run_info_all(self):
         nt = 10
@@ -173,12 +173,12 @@ class TaskfarmTest(TestCase):
 
     def test_delete_run(self):
         run = self.create_run(10)
-        response = self.app.delete('/api/runs/'+run['uuid'],  headers=headers)
-        self.assertEqual(response.status_code,  204)
+        response = self.app.delete('/api/runs/' + run['uuid'], headers=headers)
+        self.assertEqual(response.status_code, 204)
 
     def test_delete_run_na(self):
-        response = self.app.delete('/api/runs/no_such_run',  headers=headers)
-        self.assertEqual(response.status_code,  404)
+        response = self.app.delete('/api/runs/no_such_run', headers=headers)
+        self.assertEqual(response.status_code, 404)
 
     def test_create_worker(self):
         self.create_worker('blub', 1000)
@@ -188,7 +188,7 @@ class TaskfarmTest(TestCase):
         run = self.create_run(nt)
         response = self.app.post('/api/{}/task'.format(run['uuid']),
                                  headers=headers)
-        self.assertEqual(response.status_code,  404)
+        self.assertEqual(response.status_code, 404)
 
     def test_get_task_wrongworker(self):
         nt = 10
@@ -285,7 +285,7 @@ class TaskfarmTest(TestCase):
         tid = 5
         self.update_task_info(run['uuid'], tid, {'status': 'waiting'})
         rinfo = self.get_run_info(run['uuid'])
-        self.assertEqual(rinfo['numComputing'], nt-1)
+        self.assertEqual(rinfo['numComputing'], nt - 1)
 
         task = self.get_task(run['uuid'], worker['uuid'])
         self.assertEqual(task['task'], tid)
@@ -311,14 +311,14 @@ class TaskfarmTest(TestCase):
                                    'percentCompleted': 50})
         rinfo = self.get_run_info(run['uuid'])
         self.assertEqual(rinfo['numWaiting'], 0)
-        self.assertEqual(rinfo['numComputing'], nt/2)
-        self.assertEqual(rinfo['numDone'], nt/2)
+        self.assertEqual(rinfo['numComputing'], nt / 2)
+        self.assertEqual(rinfo['numDone'], nt / 2)
 
         self.restart_run(run['uuid'])
         rinfo = self.get_run_info(run['uuid'])
-        self.assertEqual(rinfo['numWaiting'], nt/2)
+        self.assertEqual(rinfo['numWaiting'], nt / 2)
         self.assertEqual(rinfo['numComputing'], 0)
-        self.assertEqual(rinfo['numDone'], nt/2)
+        self.assertEqual(rinfo['numDone'], nt / 2)
 
     def test_restart_run_all(self):
         nt = 10
@@ -333,8 +333,8 @@ class TaskfarmTest(TestCase):
                                    'percentCompleted': 50})
         rinfo = self.get_run_info(run['uuid'])
         self.assertEqual(rinfo['numWaiting'], 0)
-        self.assertEqual(rinfo['numComputing'], nt/2)
-        self.assertEqual(rinfo['numDone'], nt/2)
+        self.assertEqual(rinfo['numComputing'], nt / 2)
+        self.assertEqual(rinfo['numDone'], nt / 2)
 
         self.restart_run(run['uuid'], all='True')
         rinfo = self.get_run_info(run['uuid'])

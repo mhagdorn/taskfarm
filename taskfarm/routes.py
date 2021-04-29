@@ -131,7 +131,7 @@ def get_task(uuid):
                 if not t:
                     task = Task(task=run.nextTask, run=run)
                     break
-            run.nextTask = t+1
+            run.nextTask = t + 1
         db.session.add(run)
 
     if task:
@@ -150,7 +150,7 @@ def get_task(uuid):
 @app.route('/api/runs/<string:uuid>/tasks/<int:taskID>',
            methods=['GET', 'PUT'])
 @auth.login_required
-def taskInfo(uuid, taskID):
+def taskInfo(uuid, taskID):  # noqa C901
     run = Run.query.filter_by(uuid=uuid).first()
     if not run:
         logging.error('no run with uuid={}'.format(uuid))

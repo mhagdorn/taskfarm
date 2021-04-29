@@ -76,8 +76,9 @@ class Run(db.Model):
     @property
     def percentDone(self):
         try:
-            return db.session.query(func.sum(Task.percentCompleted)) \
-                             .filter_by(run_id=self.id).scalar()/self.numTasks
+            return db.session.query(
+                func.sum(Task.percentCompleted)).filter_by(
+                    run_id=self.id).scalar() / self.numTasks
         except Exception:
             return 0.
 
@@ -117,7 +118,7 @@ class Task(db.Model):
             "task": self.task,
             "percentCompleted": self.percentCompleted,
             "status": self.status.name,
-            }
+        }
 
 
 class Worker(db.Model):
@@ -132,5 +133,5 @@ class Worker(db.Model):
     tasks = db.relationship("Task", backref='worker', lazy='dynamic')
 
     def __repr__(self):
-        return ('{uuid: {uuid}, hostname: {hostname}, ' +
+        return ('{uuid: {uuid}, hostname: {hostname}, '
                 'pid: {pid}, start {start}}').format(self)

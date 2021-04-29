@@ -17,8 +17,8 @@ setup(
         'console_scripts': [
             'taskfarm=taskfarm.app:main',
             'adminTF=taskfarm.manage:main',
-            ]
-        },
+        ]
+    },
     test_suite='nose2.collector.collector',
     author="Magnus Hagdorn",
     description="database backed taskfarm controller",
