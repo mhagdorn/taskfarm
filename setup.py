@@ -31,6 +31,7 @@ setup(
     extras_require={
         'docs': [
             'sphinx_rtd_theme',
+            'sphinxcontrib.httpdomain',
         ],
         'lint': [
             'flake8>=3.5.0',
