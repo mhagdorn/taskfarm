@@ -36,4 +36,5 @@ adminTF -u some_user -p some_password
 ```
 These users are used by the worker to connect to the service.
 
-![test package taskfarm](https://github.com/mhagdorn/taskfarm/workflows/test%20package%20taskfarm/badge.svg)
+![test package taskfarm](https://github.com/mhagdorn/taskfarm/workflows/test%20package%20taskfarm/badge.svg) [![Documentation Status](https://readthedocs.org/projects/taskfarm/badge/?version=latest)](https://taskfarm.readthedocs.io/en/latest/?badge=latest)
+
