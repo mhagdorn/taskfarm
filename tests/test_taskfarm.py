@@ -270,6 +270,13 @@ class TaskfarmTest(TestCase):
         for s in ['waiting', 'computing', 'done']:
             self.update_task_info(run['uuid'], tid, {'status': s})
 
+    def test_update_task_info_wrong(self):
+        nt = 10
+        run = self.create_run(nt)
+        tid = 0
+
+        self.update_task_info(run['uuid'], tid,
+                              {'stat': 'wrong'}, status=400)
         self.update_task_info(run['uuid'], tid,
                               {'status': 'wrong'}, status=400)
 
