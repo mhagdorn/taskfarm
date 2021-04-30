@@ -74,10 +74,26 @@ def get_all_runs():
     return jsonify({'data': results}), 200
 
 
-# this route is documented in the api.rst file
-@app.route('/api/runs/<string:uuid>', methods=['GET', 'DELETE'])
+@app.route('/api/runs/<string:uuid>', methods=['GET'])
 @auth.login_required
 def get_run(uuid):
+    """get information about a particular run
+
+    .. :quickref: runs; get information about a particular run
+
+    :param uuid: uuid of the run
+    :type uuid: string
+    :query info: request particular information about the run.
+    :status 404: when the run does not exist
+    :status 404: when unkown information is requested
+    :status 200: the call successfully returned a json string
+
+    The ``info`` query parameter can be one of ``percentDone``,
+    ``numWaiting``, ``numDone``, ``numComputing`` to get
+    particular information of the run. By default ``info`` is the
+    empty string and call returns a json object containing all
+    those pieces of information.
+    """
     run = Run.query.filter_by(uuid=uuid).first()
     if not run:
         logging.error('no run with uuid={}'.format(uuid))
@@ -93,7 +109,27 @@ def get_run(uuid):
         else:
             abort(404)
         return jsonify(result), 200
-    elif request.method == 'DELETE':
+    abort(500)
+
+
+@app.route('/api/runs/<string:uuid>', methods=['DELETE'])
+@auth.login_required
+def delete_run(uuid):
+    """delete a particular run
+
+    .. :quickref: runs; delete a particular run
+
+    :param uuid: uuid of the run
+    :type uuid: string
+    :status 404: when the run does not exist
+    :status 204: when the run was successfully deleted
+    """
+    run = Run.query.filter_by(uuid=uuid).first()
+    if not run:
+        logging.error('no run with uuid={}'.format(uuid))
+        abort(404)
+
+    if request.method == 'DELETE':
         db.session.query(Task).filter_by(run_id=run.id).delete()
         db.session.delete(run)
         db.session.commit()
@@ -203,11 +239,29 @@ def get_task(uuid):
         return jsonify(task.to_dict), 201
 
 
-# this route is documented in the api.rst file
-@app.route('/api/runs/<string:uuid>/tasks/<int:taskID>',
-           methods=['GET', 'PUT'])
+@app.route('/api/runs/<string:uuid>/tasks/<int:taskID>', methods=['GET'])
 @auth.login_required
-def taskInfo(uuid, taskID):  # noqa C901
+def taskInfo(uuid, taskID):
+    """get information about a particular task
+
+    .. :quickref: runs; information about a particular task
+
+    :param uuid: uuid of the run
+    :type uuid: string
+    :param taskID: the task's ID
+    :type taskID: int
+    :query info: request particular information about the task
+    :status 404: when the run does not exist
+    :status 404: when the taskID < 0 or when taskID is larger
+                 than the number of tasks
+    :status 404: when unkown information is requeste
+    :status 200: the call successfully returned a json string
+
+    The ``info`` query parameter can be one of ``status`` or
+    ``percentDone`` to get particular information of the task.
+    By default ``info`` is the empty string and call returns a
+    json object containing all those pieces of information.
+    """
     run = Run.query.filter_by(uuid=uuid).first()
     if not run:
         logging.error('no run with uuid={}'.format(uuid))
@@ -236,7 +290,48 @@ def taskInfo(uuid, taskID):  # noqa C901
         else:
             abort(404)
         return jsonify(result), 200
-    elif request.method == 'PUT':
+    abort(500)
+
+
+@app.route('/api/runs/<string:uuid>/tasks/<int:taskID>', methods=['PUT'])
+@auth.login_required
+def updateTask(uuid, taskID):  # noqa C901
+    """update a particular task
+
+    .. :quickref: runs; update a particular task
+
+    :param uuid: uuid of the run
+    :type uuid: string
+    :param taskID: the task's ID
+    :type taskID: int
+
+    :<json float percentCompleted: percentage of task completed
+    :<json string status: status of task, can be ``waiting``,
+                          ``computing``, ``done``
+
+    :status 400: an error occurred updating the task
+    :status 204: the task was successfully updated
+    """
+    run = Run.query.filter_by(uuid=uuid).first()
+    if not run:
+        logging.error('no run with uuid={}'.format(uuid))
+        abort(404)
+    task = Task.query.filter_by(run_id=run.id, task=taskID).first()
+    if not task:
+        if taskID < 0 or taskID >= run.numTasks:
+            logging.error('no taskID {} outside range(0,{})'
+                          .format(taskID, run.numTasks))
+            abort(404)
+
+        # create a new task
+        task = Task(task=taskID, run=run)
+        db.session.add(task)
+        if run.nextTask == taskID:
+            run.nextTask += 1
+            db.session.add(run)
+        db.session.commit()
+
+    if request.method == 'PUT':
         if not request.get_json():
             abort(400)
         data = request.get_json()
