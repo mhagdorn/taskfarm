@@ -103,7 +103,8 @@ class Task(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     task = db.Column(db.Integer)
-    status = db.Column(db.Enum(TaskState), default=TaskState.waiting)
+    status = db.Column(db.Enum(TaskState, validate_strings=True),
+                       default=TaskState.waiting)
     started = db.Column(db.DateTime)
     updated = db.Column(db.DateTime)
     percentCompleted = db.Column(db.Float, default=0.)
