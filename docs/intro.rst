@@ -9,9 +9,9 @@ Setup
 After installing the python package you need to connect to a database. For
 testing purposes you can use sqlite. However, sqlite does not allow row
 locking so if you use parallel workers a task may get assigned to the multiple
-workers.
+workers. For production use you should use a postgres database instead.
 
-You can set the environment variable ``DATABASE_URL`` to configure the data base
+You can set the environment variable ``DATABASE_URL`` to configure the database
 connection. For example
 
 .. code-block:: bash
