@@ -336,6 +336,8 @@ def updateTask(uuid, taskID):  # noqa C901
             abort(400)
         data = request.get_json()
         for info in data:
+            if info not in ['percentCompleted', 'status']:
+                abort(400)
             try:
                 setattr(task, info, data[info])
             except Exception as e:
