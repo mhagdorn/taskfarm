@@ -5,3 +5,4 @@ flask-testing
 itsdangerous
 passlib
 sphinxcontrib.httpdomain
+sphinx<4.0

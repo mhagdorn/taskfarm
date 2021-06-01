@@ -30,6 +30,7 @@ setup(
     ],
     extras_require={
         'docs': [
+            'sphinx<4.0',
             'sphinx_rtd_theme',
             'sphinxcontrib.httpdomain',
         ],
