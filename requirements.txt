@@ -2,7 +2,7 @@ flask
 flask-sqlalchemy
 flask-httpauth
 flask-testing
-itsdangerous
+itsdangerous == 2.0.1
 passlib
 sphinxcontrib.httpdomain
 sphinx<4.0
