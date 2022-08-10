@@ -1,3 +1,4 @@
+from .__version__ import __version__
 from .application import app, db  # noqa F401
 from .routes import *  # noqa F401 F403
 from .models import *  # noqa F401 F403
