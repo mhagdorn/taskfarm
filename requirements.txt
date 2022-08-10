@@ -6,3 +6,4 @@ itsdangerous == 2.0.1
 passlib
 sphinxcontrib.httpdomain
 sphinx<4.0
+jinja<3.1
