@@ -2,17 +2,37 @@ Introduction
 ============
 The taskfarm is a server-client application that tracks tasks to be completed. The server is provides a REST API to create and update runs. This is the python server documentation.
 
-This package solves the problem of managing a loosely coupled taskfarm where there are many tasks and the workers are entitrly independent of each other. Instead of using a farmer process a database is used to hand out new tasks to the workers. The workers contact a web application via http(s) to get a new task.
+This package solves the problem of managing a loosely coupled taskfarm where there are many tasks and the workers are entirely independent of each other. Instead of using a farmer process a database is used to hand out new tasks to the workers. The workers contact a web application via http(s) to get a new task.
+
+You can use the `taskfarm-worker <https://github.com/mhagdorn/taskfarm-worker>`_ python package to connect to the taskfarm service.
+
+The server is implemented using the `flask <https://flask.palletsprojects.com/>`_ web framework and uses `flask-sqlalchemy <https://flask-sqlalchemy.palletsprojects.com/>`_ to connect to a relational database.
+
+Installation
+------------
+You can install the package from source after cloning the repository
+
+.. code-block:: bash
+		
+  git clone https://github.com/mhagdorn/taskfarm.git
+  cd taskfarm
+  python3 setup.py install
+
+or simply using ``pip``
+
+.. code-block:: bash
+		
+  pip install taskfarm
 
 Setup
 -----
 After installing the python package you need to connect to a database. For
 testing purposes you can use sqlite. However, sqlite does not allow row
-locking so if you use parallel workers a task may get assigned to the multiple
-workers. For production use you should use a postgres database instead.
+locking so if you use parallel workers a single task may get assigned to
+multiple workers. For production use you should use a postgres database instead.
 
 You can set the environment variable ``DATABASE_URL`` to configure the database
-connection. For example
+connection (see the `SQLAlchemy documentation <https://docs.sqlalchemy.org/en/14/core/engines.html#database-urls>`_). For example
 
 .. code-block:: bash
 		
@@ -38,3 +58,14 @@ You can then create some users
  adminTF -u some_user -p some_password
 
 These users are used by the worker to connect to the service.
+
+Running the Taskfarm Server
+---------------------------
+The taskfarm server is a flask web application. For testing you can run it locally using
+
+.. code-block:: bash
+		
+  export FLASK_APP=taskfarm
+  flask run
+
+For a production setup you need to deploy the flask application using a WSGI server such as `gunicorn <https://gunicorn.org/>`_. The flask documentation lists the various options for self-hosting or hosting in the cloud a flask application.
