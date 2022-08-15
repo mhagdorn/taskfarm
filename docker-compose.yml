@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  web:
+    build: ./services/web
+    command: gunicorn3  --bind 0.0.0.0:5000 taskfarm:app
+    volumes:
+      - ./services/web/:/usr/src/app/
+    expose:
+      - 5000
+    env_file:
+      - ./.environment
+    depends_on:
+      - db
+  db:
+    image: postgres:13-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=taskfarm
+      - POSTGRES_PASSWORD=secret_password_change_me
+      - POSTGRES_DB=taskfarm
+  nginx:
+    build: ./services/nginx
+    ports:
+      - 80:80
+    depends_on:
+      - web
+volumes:
+  postgres_data:

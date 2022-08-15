@@ -1,0 +1,5 @@
+FLASK_APP=taskfarm
+DATABASE_URL=postgresql://taskfarm:secret_password_change_me@db:5432/taskfarm
+SQL_HOST=db
+SQL_PORT=5432
+DATABASE=postgres
