@@ -4,6 +4,7 @@ from flask import jsonify, request, abort, g
 from uuid import uuid4
 from datetime import datetime
 from .models import Worker, Task, Run, TaskState, User
+from .__version__ import __version__
 import logging
 
 auth = HTTPBasicAuth()
@@ -20,6 +21,24 @@ def verify_password(username_or_token, password):
             return False
     g.user = user
     return True
+
+
+@app.route('/')
+def index():
+    """print info about taskfarm server"""
+
+    return f"""
+<h1>Taskfarm Server</h1>
+<p>version: {__version__}</p>
+<p>See
+<ul>
+<li>the <a href="https://taskfarm.readthedocs.io/en/latest/">
+taskfarm server</a> documentation</li>
+<li>the <a href="https://taskfarm-worker.readthedocs.io/en/latest/">
+taskfarm worker</a> documentation</li>
+</ul>
+</p>
+"""
 
 
 @app.route('/api/token')
