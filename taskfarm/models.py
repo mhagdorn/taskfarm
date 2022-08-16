@@ -1,7 +1,8 @@
 __all__ = ['TaskState', 'User', 'Run', 'Task', 'Worker']
 
 from .application import db, app
-from itsdangerous import JSONWebSignatureSerializer as Serializer, BadSignature
+from authlib.jose import jwt
+from authlib.jose.errors import DecodeError
 from sqlalchemy import func
 import enum
 from passlib.apps import custom_app_context as pwd_context
@@ -29,16 +30,14 @@ class User(db.Model):
         return pwd_context.verify(password, self.password_hash)
 
     def generate_auth_token(self):
-        pass
-        s = Serializer(app.config['SECRET_KEY'])
-        return s.dumps({'id': self.id})
+        return jwt.encode(
+            {'alg': 'HS256'}, {'id': self.id}, app.config['SECRET_KEY'])
 
     @staticmethod
     def verify_auth_token(token):
-        s = Serializer(app.config['SECRET_KEY'])
         try:
-            data = s.loads(token)
-        except BadSignature:
+            data = jwt.decode(token, app.config['SECRET_KEY'])
+        except DecodeError as e:
             return None  # invalid token
         user = User.query.get(data['id'])
         return user
