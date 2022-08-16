@@ -37,7 +37,7 @@ class User(db.Model):
     def verify_auth_token(token):
         try:
             data = jwt.decode(token, app.config['SECRET_KEY'])
-        except DecodeError as e:
+        except DecodeError:
             return None  # invalid token
         user = User.query.get(data['id'])
         return user
@@ -133,5 +133,5 @@ class Worker(db.Model):
     tasks = db.relationship("Task", backref='worker', lazy='dynamic')
 
     def __repr__(self):
-        return ('{uuid: {uuid}, hostname: {hostname}, '
-                'pid: {pid}, start {start}}').format(self)
+        return (f'{{uuid: {self.uuid}, hostname: {self.hostname}, '
+                f'pid: {self.pid}, start {self.start}}}')
