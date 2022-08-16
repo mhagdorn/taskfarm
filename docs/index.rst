@@ -11,6 +11,7 @@ Welcome to Taskfarm's documentation!
    :caption: Contents:
 
    intro
+   installation
    api
 
 Indices and tables
