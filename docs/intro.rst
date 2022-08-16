@@ -9,7 +9,9 @@ You can use the `taskfarm-worker <https://github.com/mhagdorn/taskfarm-worker>`_
 The server is implemented using the `flask <https://flask.palletsprojects.com/>`_ web framework and uses `flask-sqlalchemy <https://flask-sqlalchemy.palletsprojects.com/>`_ to connect to a relational database.
 
 Installation
-------------
+============
+Local Installation
+------------------
 You can install the package from source after cloning the repository
 
 .. code-block:: bash
@@ -25,7 +27,7 @@ or simply using ``pip``
   pip install taskfarm
 
 Setup
------
+^^^^^
 After installing the python package you need to connect to a database. For
 testing purposes you can use sqlite. However, sqlite does not allow row
 locking so if you use parallel workers a single task may get assigned to
@@ -60,7 +62,7 @@ You can then create some users
 These users are used by the worker to connect to the service.
 
 Running the Taskfarm Server
----------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 The taskfarm server is a flask web application. For testing you can run it locally using
 
 .. code-block:: bash
@@ -68,4 +70,37 @@ The taskfarm server is a flask web application. For testing you can run it local
   export FLASK_APP=taskfarm
   flask run
 
+You can check the service is running by browsing to http://localhost:5000/ or running
+
+.. code-block:: bash
+
+  curl http://localhost:5000/
+
 For a production setup you need to deploy the flask application using a WSGI server such as `gunicorn <https://gunicorn.org/>`_. The flask documentation lists the various options for self-hosting or hosting in the cloud a flask application.
+
+Containerised Installation
+--------------------------
+Instead of installing the taskfarm server locally and managing the flask webapplication service you can run the taskfarm server as a containerised service. You need a working `docker setup <https://docs.docker.com/get-started/>`_ and `docker compose <https://docs.docker.com/compose/>`_. The taskfarm service is built using Ubuntu containers, one for the web application, one for the postgres database and one for the web server. You can build and start the containers using
+
+.. code-block:: bash
+
+  docker-compose build
+
+You need to initialise the database and create a user, ie
+
+.. code-block:: bash
+
+  docker-compose run web  adminTF --init-db
+  docker-compose run web  adminTF -u taskfarm -p hello
+ 
+You can now start the service
+
+.. code-block:: bash
+
+  docker-compose up -d
+
+and you can reach the taskfarm server on port 80. You can check the service is running by browsing to http://localhost/ or running
+
+.. code-block:: bash
+
+  curl http://localhost/
