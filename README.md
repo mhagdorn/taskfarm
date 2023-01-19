@@ -11,5 +11,7 @@ to connect to the taskfarm service.
 
 See the [documentation](https://taskfarm.readthedocs.io/en/latest/) for installation instructions.
 
+Hagdorn, M. and Gourmelen, N., 2023. Taskfarm: A Client/Server Framework for Supporting Massive Embarrassingly Parallel Workloads. Journal of Open Research Software, 11(1), p.1. DOI: [10.5334/jors.393](http://doi.org/10.5334/jors.393)
+
 ![test package taskfarm](https://github.com/mhagdorn/taskfarm/workflows/test%20package%20taskfarm/badge.svg) [![Documentation Status](https://readthedocs.org/projects/taskfarm/badge/?version=latest)](https://taskfarm.readthedocs.io/en/latest/?badge=latest) [![CITATION.cff](https://github.com/mhagdorn/taskfarm/actions/workflows/cff-validator.yml/badge.svg)](https://github.com/mhagdorn/taskfarm/actions/workflows/cff-validator.yml)
 
