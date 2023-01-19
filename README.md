@@ -11,5 +11,5 @@ to connect to the taskfarm service.
 
 See the [documentation](https://taskfarm.readthedocs.io/en/latest/) for installation instructions.
 
-![test package taskfarm](https://github.com/mhagdorn/taskfarm/workflows/test%20package%20taskfarm/badge.svg) [![Documentation Status](https://readthedocs.org/projects/taskfarm/badge/?version=latest)](https://taskfarm.readthedocs.io/en/latest/?badge=latest)
+![test package taskfarm](https://github.com/mhagdorn/taskfarm/workflows/test%20package%20taskfarm/badge.svg) [![Documentation Status](https://readthedocs.org/projects/taskfarm/badge/?version=latest)](https://taskfarm.readthedocs.io/en/latest/?badge=latest) [![CITATION.cff](https://github.com/mhagdorn/taskfarm/actions/workflows/cff-validator.yml/badge.svg)](https://github.com/mhagdorn/taskfarm/actions/workflows/cff-validator.yml)
 
